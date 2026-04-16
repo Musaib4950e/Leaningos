@@ -10648,12 +10648,14 @@ async function onSwipeComplete() {
     const localOrder = { id: newOrderRef?.id||('local_'+Date.now()), ...orderData, createdAt: new Date() };
     _mktOrders = [localOrder, ..._mktOrders];
 
-    // Notify admin
-    if(DB()) await FB().addDoc(FB().collection(DB(),'notifications'),{
-      type:'info',adminOnly:true,
-      text:`💳 ${name} purchased ${_ccPayItems.length} item(s) for ₹${_ccPayTotal.toLocaleString('en-IN')} via Card`,
-      ts:'Just now',createdAt:FB()?.serverTimestamp?.()
-    });
+    // Notify admin (non-critical — don't let this kill the payment)
+try {
+  if(DB()) await FB().addDoc(FB().collection(DB(),'notifications'),{
+    type:'info', adminOnly:true,
+    text:`💳 ${name} purchased ${_ccPayItems.length} item(s) for ₹${_ccPayTotal.toLocaleString('en-IN')} via Card`,
+    ts:'Just now', createdAt:FB()?.serverTimestamp?.()
+  });
+} catch(notifErr) { console.warn('Notify failed:', notifErr); }
     // Update stock
     for(const it of _ccPayItems){
       if(it.product.category!=='digital'&&it.product.id.charAt(0)!=='d'&&DB()){
