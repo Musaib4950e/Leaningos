@@ -1,5 +1,5 @@
 // EduPanel Service Worker — edoos-v3
-const CACHE = 'edoos-vtb8';
+const CACHE = 'edoos-vtyb8';
 const OFFLINE_URLS = ['/'];
 
 // Install: cache the shell
